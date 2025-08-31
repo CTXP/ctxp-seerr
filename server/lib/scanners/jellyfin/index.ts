@@ -219,14 +219,14 @@ class JellyfinScanner {
       throw new Error('No ID provided');
     }
 
-    const indexer = tvShow.keywords.results.some(
+    const metadataProvider = tvShow.keywords.results.some(
       (keyword: TmdbKeyword) => keyword.id === ANIME_KEYWORD_ID
     )
       ? await getMetadataProvider('anime')
       : await getMetadataProvider('tv');
 
-    if (!(indexer instanceof TheMovieDb)) {
-      tvShow = await indexer.getTvShow({
+    if (!(metadataProvider instanceof TheMovieDb)) {
+      tvShow = await metadataProvider.getTvShow({
         tvId: Number(tmdbId),
       });
     }

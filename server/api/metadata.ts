@@ -1,7 +1,7 @@
 import type { TvShowProvider } from '@server/api/provider';
 import TheMovieDb from '@server/api/themoviedb';
 import Tvdb from '@server/api/tvdb';
-import { getSettings, IndexerType } from '@server/lib/settings';
+import { getSettings, MetadataProviderType } from '@server/lib/settings';
 import logger from '@server/logger';
 
 export const getMetadataProvider = async (
@@ -14,13 +14,16 @@ export const getMetadataProvider = async (
       return new TheMovieDb();
     }
 
-    if (mediaType == 'tv' && settings.metadataSettings.tv == IndexerType.TVDB) {
+    if (
+      mediaType == 'tv' &&
+      settings.metadataSettings.tv == MetadataProviderType.TVDB
+    ) {
       return await Tvdb.getInstance();
     }
 
     if (
       mediaType == 'anime' &&
-      settings.metadataSettings.anime == IndexerType.TVDB
+      settings.metadataSettings.anime == MetadataProviderType.TVDB
     ) {
       return await Tvdb.getInstance();
     }

@@ -21,12 +21,12 @@ tvRoutes.get('/:id', async (req, res, next) => {
     const tmdbTv = await tmdb.getTvShow({
       tvId: Number(req.params.id),
     });
-    const indexer = tmdbTv.keywords.results.some(
+    const metadataProvider = tmdbTv.keywords.results.some(
       (keyword: TmdbKeyword) => keyword.id === ANIME_KEYWORD_ID
     )
       ? await getMetadataProvider('anime')
       : await getMetadataProvider('tv');
-    const tv = await indexer.getTvShow({
+    const tv = await metadataProvider.getTvShow({
       tvId: Number(req.params.id),
       language: (req.query.language as string) ?? req.locale,
     });
@@ -45,7 +45,7 @@ tvRoutes.get('/:id', async (req, res, next) => {
 
     // TMDB issue where it doesnt fallback to English when no overview is available in requested locale.
     if (!data.overview) {
-      const tvEnglish = await indexer.getTvShow({
+      const tvEnglish = await metadataProvider.getTvShow({
         tvId: Number(req.params.id),
       });
       data.overview = tvEnglish.overview;
@@ -71,13 +71,13 @@ tvRoutes.get('/:id/season/:seasonNumber', async (req, res, next) => {
     const tmdbTv = await tmdb.getTvShow({
       tvId: Number(req.params.id),
     });
-    const indexer = tmdbTv.keywords.results.some(
+    const metadataProvider = tmdbTv.keywords.results.some(
       (keyword: TmdbKeyword) => keyword.id === ANIME_KEYWORD_ID
     )
       ? await getMetadataProvider('anime')
       : await getMetadataProvider('tv');
 
-    const season = await indexer.getTvSeason({
+    const season = await metadataProvider.getTvSeason({
       tvId: Number(req.params.id),
       seasonNumber: Number(req.params.seasonNumber),
     });

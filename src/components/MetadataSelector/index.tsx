@@ -5,14 +5,14 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 import Select, { type StylesConfig } from 'react-select';
 
-enum IndexerType {
+enum MetadataProviderType {
   TMDB = 'tmdb',
   TVDB = 'tvdb',
 }
 
-type IndexerOptionType = {
+type MetadataProviderOptionType = {
   testId?: string;
-  value: IndexerType;
+  value: MetadataProviderType;
   label: string;
   icon: React.ReactNode;
 };
@@ -20,40 +20,40 @@ type IndexerOptionType = {
 const messages = defineMessages('components.MetadataSelector', {
   tmdbLabel: 'The Movie Database (TMDB)',
   tvdbLabel: 'TheTVDB',
-  selectIndexer: 'Select a metadata provider',
+  selectMetdataProvider: 'Select a metadata provider',
 });
 
 interface MetadataSelectorProps {
   testId: string;
-  value: IndexerType;
-  onChange: (value: IndexerType) => void;
+  value: MetadataProviderType;
+  onChange: (value: MetadataProviderType) => void;
   isDisabled?: boolean;
 }
 
 const MetadataSelector = ({
-  testId = 'indexer-selector',
+  testId = 'metadata-provider-selector',
   value,
   onChange,
   isDisabled = false,
 }: MetadataSelectorProps) => {
   const intl = useIntl();
 
-  const indexerOptions: IndexerOptionType[] = [
+  const metadataProviderOptions: MetadataProviderOptionType[] = [
     {
       testId: 'tmdb-option',
-      value: IndexerType.TMDB,
+      value: MetadataProviderType.TMDB,
       label: intl.formatMessage(messages.tmdbLabel),
       icon: <TmdbLogo />,
     },
     {
       testId: 'tvdb-option',
-      value: IndexerType.TVDB,
+      value: MetadataProviderType.TVDB,
       label: intl.formatMessage(messages.tvdbLabel),
       icon: <TvdbLogo />,
     },
   ];
 
-  const customStyles: StylesConfig<IndexerOptionType, false> = {
+  const customStyles: StylesConfig<MetadataProviderOptionType, false> = {
     option: (base) => ({
       ...base,
       display: 'flex',
@@ -66,7 +66,7 @@ const MetadataSelector = ({
     }),
   };
 
-  const formatOptionLabel = (option: IndexerOptionType) => (
+  const formatOptionLabel = (option: MetadataProviderOptionType) => (
     <div className="flex items-center">
       {option.icon}
       <span data-testid={option.testId}>{option.label}</span>
@@ -76,17 +76,17 @@ const MetadataSelector = ({
   return (
     <div data-testid={testId}>
       <Select
-        options={indexerOptions}
+        options={metadataProviderOptions}
         isDisabled={isDisabled}
         className="react-select-container"
         classNamePrefix="react-select"
-        value={indexerOptions.find((option) => option.value === value)}
+        value={metadataProviderOptions.find((option) => option.value === value)}
         onChange={(selectedOption) => {
           if (selectedOption) {
             onChange(selectedOption.value);
           }
         }}
-        placeholder={intl.formatMessage(messages.selectIndexer)}
+        placeholder={intl.formatMessage(messages.selectMetdataProvider)}
         styles={customStyles}
         formatOptionLabel={formatOptionLabel}
       />
@@ -94,5 +94,5 @@ const MetadataSelector = ({
   );
 };
 
-export { IndexerType };
+export { MetadataProviderType };
 export default MetadataSelector;

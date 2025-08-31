@@ -100,14 +100,14 @@ interface Quota {
   quotaDays?: number;
 }
 
-export enum IndexerType {
+export enum MetadataProviderType {
   TMDB = 'tmdb',
   TVDB = 'tvdb',
 }
 
 export interface MetadataSettings {
-  tv: IndexerType;
-  anime: IndexerType;
+  tv: MetadataProviderType;
+  anime: MetadataProviderType;
 }
 
 export interface ProxySettings {
@@ -422,8 +422,8 @@ class Settings {
       },
       tautulli: {},
       metadataSettings: {
-        tv: IndexerType.TMDB,
-        anime: IndexerType.TMDB,
+        tv: MetadataProviderType.TMDB,
+        anime: MetadataProviderType.TMDB,
       },
       radarr: [],
       sonarr: [],

@@ -3,7 +3,7 @@ import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
 import MetadataSelector, {
-  IndexerType,
+  MetadataProviderType,
 } from '@app/components/MetadataSelector';
 import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
@@ -16,10 +16,11 @@ import { useToasts } from 'react-toast-notifications';
 import useSWR from 'swr';
 
 const messages = defineMessages('components.Settings', {
+  metadataProviderSettings: 'Metadata Providers',
   general: 'General',
   settings: 'Settings',
-  seriesIndexer: 'Series metadata provider',
-  animeIndexer: 'Anime metadata provider',
+  seriesMetadataProvider: 'Series metadata provider',
+  animeMetadataProvider: 'Anime metadata provider',
   metadataSettings: 'Settings for metadata provider',
   clickTest:
     'Click on the "Test" button to check connectivity with metadata providers',
@@ -28,7 +29,7 @@ const messages = defineMessages('components.Settings', {
   operational: 'Operational',
   providerStatus: 'Metadata Provider Status',
   chooseProvider: 'Choose metadata providers for different content types',
-  indexerSelection: 'Metadata Provider Selection',
+  metadataProviderSelection: 'Metadata Provider Selection',
   tmdbProviderDoesnotWork:
     'TMDB provider does not work, please select another metadata provider',
   tvdbProviderDoesnotWork:
@@ -48,8 +49,8 @@ interface ProviderResponse {
 }
 
 interface MetadataValues {
-  tv: IndexerType;
-  anime: IndexerType;
+  tv: MetadataProviderType;
+  anime: MetadataProviderType;
 }
 
 interface MetadataSettings {
@@ -72,8 +73,8 @@ const SettingsMetadata = () => {
     '/api/v1/settings/metadatas',
     async (url: string) => {
       const response = await axios.get<{
-        tv: IndexerType;
-        anime: IndexerType;
+        tv: MetadataProviderType;
+        anime: MetadataProviderType;
       }>(url);
 
       return {
@@ -89,9 +90,11 @@ const SettingsMetadata = () => {
     values: MetadataValues
   ): Promise<ProviderResponse> => {
     const useTmdb =
-      values.tv === IndexerType.TMDB || values.anime === IndexerType.TMDB;
+      values.tv === MetadataProviderType.TMDB ||
+      values.anime === MetadataProviderType.TMDB;
     const useTvdb =
-      values.tv === IndexerType.TVDB || values.anime === IndexerType.TVDB;
+      values.tv === MetadataProviderType.TVDB ||
+      values.anime === MetadataProviderType.TVDB;
 
     const testData = {
       tmdb: useTmdb,
@@ -141,8 +144,8 @@ const SettingsMetadata = () => {
     try {
       const response = await axios.put<{
         success: boolean;
-        tv: IndexerType;
-        anime: IndexerType;
+        tv: MetadataProviderType;
+        anime: MetadataProviderType;
         tests?: {
           tvdb: ProviderStatus;
           tmdb: ProviderStatus;
@@ -252,8 +255,8 @@ const SettingsMetadata = () => {
   }
 
   const initialValues: MetadataValues = data?.metadata || {
-    tv: IndexerType.TMDB,
-    anime: IndexerType.TMDB,
+    tv: MetadataProviderType.TMDB,
+    anime: MetadataProviderType.TMDB,
   };
 
   return (
@@ -266,7 +269,9 @@ const SettingsMetadata = () => {
       />
 
       <div className="mb-6">
-        <h3 className="heading">Metadata</h3>
+        <h3 className="heading">
+          {intl.formatMessage(messages.metadataProviderSettings)}
+        </h3>
         <p className="description">
           {intl.formatMessage(messages.metadataSettings)}
         </p>
@@ -331,7 +336,7 @@ const SettingsMetadata = () => {
               <Form className="section" data-testid="settings-main-form">
                 <div className="mb-6">
                   <h2 className="heading">
-                    {intl.formatMessage(messages.indexerSelection)}
+                    {intl.formatMessage(messages.metadataProviderSelection)}
                   </h2>
                   <p className="description">
                     {intl.formatMessage(messages.chooseProvider)}
@@ -339,14 +344,17 @@ const SettingsMetadata = () => {
                 </div>
 
                 <div className="form-row">
-                  <label htmlFor="tvIndexer" className="checkbox-label">
+                  <label
+                    htmlFor="tv-metadata-provider"
+                    className="checkbox-label"
+                  >
                     <span className="mr-2">
-                      {intl.formatMessage(messages.seriesIndexer)}
+                      {intl.formatMessage(messages.seriesMetadataProvider)}
                     </span>
                   </label>
                   <div className="form-input-area">
                     <MetadataSelector
-                      testId="tv-indexer-selector"
+                      testId="tv-metadata-provider-selector"
                       value={values.metadata.tv}
                       onChange={(value) => setFieldValue('metadata.tv', value)}
                       isDisabled={isSubmitting}
@@ -355,14 +363,17 @@ const SettingsMetadata = () => {
                 </div>
 
                 <div className="form-row">
-                  <label htmlFor="animeIndexer" className="checkbox-label">
+                  <label
+                    htmlFor="anime-metadata-provider"
+                    className="checkbox-label"
+                  >
                     <span className="mr-2">
-                      {intl.formatMessage(messages.animeIndexer)}
+                      {intl.formatMessage(messages.animeMetadataProvider)}
                     </span>
                   </label>
                   <div className="form-input-area">
                     <MetadataSelector
-                      testId="anime-indexer-selector"
+                      testId="anime-metadata-provider-selector"
                       value={values.metadata.anime}
                       onChange={(value) =>
                         setFieldValue('metadata.anime', value)

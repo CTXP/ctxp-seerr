@@ -16,8 +16,9 @@ describe('TVDB Integration', () => {
     metadataSaveButton: '[data-testid="metadata-save-button"]',
     tmdbStatus: '[data-testid="tmdb-status"]',
     tvdbStatus: '[data-testid="tvdb-status"]',
-    tvIndexerSelector: '[data-testid="tv-indexer-selector"]',
-    animeIndexerSelector: '[data-testid="anime-indexer-selector"]',
+    tvMetadataProviderSelector: '[data-testid="tv-metadata-provider-selector"]',
+    animeMetadataProviderSelector:
+      '[data-testid="anime-metadata-provider-selector"]',
     seasonSelector: '[data-testid="season-selector"]',
     season1: 'Season 1',
     season2: 'Season 2',
@@ -50,7 +51,7 @@ describe('TVDB Integration', () => {
         req.body = customBody;
       }).as('saveMetadata');
     } else {
-      // Sinon, juste intercepter sans modifier
+      // Else just intercept without modifying body
       cy.intercept('PUT', '/api/v1/settings/metadatas').as('saveMetadata');
     }
 
@@ -69,10 +70,10 @@ describe('TVDB Integration', () => {
     cy.contains('h3', 'Metadata Providers').should('be.visible');
 
     // Configure TVDB as TV provider and test connection
-    cy.get('[data-testid="tv-indexer-selector"]').click();
+    cy.get(SELECTORS.tvMetadataProviderSelector).click();
 
     // get id react-select-4-option-1
-    cy.get('[id^="react-select-4-option-"]').contains('TheTVDB').click();
+    cy.get('[class*="react-select__option"]').contains('TheTVDB').click();
 
     // Test the connection
     testAndVerifyMetadataConnection().then(({ response }) => {

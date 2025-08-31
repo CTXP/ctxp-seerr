@@ -2,7 +2,7 @@ import TheMovieDb from '@server/api/themoviedb';
 import Tvdb from '@server/api/tvdb';
 import {
   getSettings,
-  IndexerType,
+  MetadataProviderType,
   type MetadataSettings,
 } from '@server/lib/settings';
 import logger from '@server/logger';
@@ -32,21 +32,27 @@ metadataRoutes.put('/', async (req, res) => {
   let tmdbTest = -1;
 
   try {
-    if (body.tv === IndexerType.TVDB || body.anime === IndexerType.TVDB) {
+    if (
+      body.tv === MetadataProviderType.TVDB ||
+      body.anime === MetadataProviderType.TVDB
+    ) {
       tvdbTest = 0;
       const tvdb = await Tvdb.getInstance();
       await tvdb.test();
       tvdbTest = 1;
     }
   } catch (e) {
-    logger.error('Failed to test indexers', {
+    logger.error('Failed to test metadata provider', {
       label: 'Metadata',
       message: e.message,
     });
   }
 
   try {
-    if (body.tv === IndexerType.TMDB || body.anime === IndexerType.TMDB) {
+    if (
+      body.tv === MetadataProviderType.TMDB ||
+      body.anime === MetadataProviderType.TMDB
+    ) {
       tmdbTest = 0;
       const tmdb = new TheMovieDb();
       await tmdb.getTvShow({ tvId: 1054 });
