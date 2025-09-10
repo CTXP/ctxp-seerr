@@ -1,5 +1,6 @@
 import ExternalAPI from '@server/api/externalapi';
 import { ApiErrorCode } from '@server/constants/error';
+import { MediaServerType } from '@server/constants/server';
 import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 import { ApiError } from '@server/types/error';
@@ -52,6 +53,10 @@ class EmbyConnectAPI extends ExternalAPI {
       {
         headers: {
           'X-Application': `Jellyseerr/${getAppVersion()}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(getSettings().main.mediaServerType === MediaServerType.EMBY &&
+            {}),
         },
       }
     );
@@ -105,11 +110,9 @@ class EmbyConnectAPI extends ExternalAPI {
     Password?: string
   ): Promise<ConnectAuthResponse> {
     try {
-      const textResponse = await this.post<string>(
+      const response = await this.post<ConnectAuthResponse>(
         '/service/user/authenticate',
         { nameOrEmail: Email, rawpw: Password },
-        {},
-        undefined,
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -117,11 +120,12 @@ class EmbyConnectAPI extends ExternalAPI {
         }
       );
 
-      return JSON.parse(textResponse) as ConnectAuthResponse;
+      return response;
     } catch (e) {
-      logger.debug(`Failed to authenticate using EmbyConnect: ${e.message}`, {
+      logger.debug(`Failed to authenticate using EmbyConnect:`, {
         label: 'EmbyConnect API',
         ip: this.ClientIP,
+        error: e.message,
       });
       throw new ApiError(
         e.cause?.status ?? 401,
@@ -135,26 +139,19 @@ class EmbyConnectAPI extends ExternalAPI {
     AccessToken: string
   ): Promise<LinkedServer[]> {
     try {
-      const textResponse = await this.get<string>(
-        `/service/servers`,
-        { userId: ConnectUserId },
-        undefined,
-        {
-          headers: {
-            'X-Connect-UserToken': AccessToken,
-          },
-        }
-      );
-
-      return JSON.parse(textResponse) as LinkedServer[];
+      const response = await this.get<LinkedServer[]>(`/service/servers`, {
+        params: { userId: ConnectUserId },
+        headers: {
+          'X-Connect-UserToken': AccessToken,
+        },
+      });
+      return response;
     } catch (e) {
-      logger.error(
-        `Failed to retrieve EmbyConnect user server list: ${e.message}`,
-        {
-          label: 'EmbyConnect API',
-          ip: this.ClientIP,
-        }
-      );
+      logger.error(`Failed to retrieve EmbyConnect user server list: `, {
+        label: 'EmbyConnect API',
+        ip: this.ClientIP,
+        error: e.message,
+      });
       throw new ApiError(e.cause?.status, ApiErrorCode.InvalidAuthToken);
     }
   }
@@ -205,7 +202,7 @@ class EmbyConnectAPI extends ExternalAPI {
 
       return await response.json();
     } catch (e) {
-      logger.debug('Failed local user auth exchange');
+      logger.debug('Failed local user auth exchange', e.cause);
       throw new ApiError(e.cause?.status, ApiErrorCode.InvalidAuthToken);
     }
   }

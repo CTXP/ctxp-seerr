@@ -463,7 +463,7 @@ authRoutes.post('/jellyfin', async (req, res, next) => {
         message: 'Access denied.',
       });
     } else if (!user) {
-      // Emby Connect user with unlinked local account?
+      // Handle Emby Connect user with unlinked local account
       if (
         settings.main.mediaServerType === MediaServerType.EMBY &&
         account.User.Email &&
