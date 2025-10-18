@@ -664,6 +664,7 @@ export class MediaRequestSubscriber
           seriesType,
           tags,
           monitored: true,
+          monitorNewItems: sonarrSettings.monitorNewItems,
           searchNow: !sonarrSettings.preventSearch,
         };
 
