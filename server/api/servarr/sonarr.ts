@@ -99,7 +99,7 @@ export interface AddSeriesOptions {
   tags?: number[];
   seriesType: SonarrSeries['seriesType'];
   monitored?: boolean;
-  monitorNewItems?: 'all' | 'none';
+  monitorNewItems?: SonarrSeries['monitorNewItems'];
   searchNow?: boolean;
 }
 
