@@ -4,8 +4,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
+    workflow-dispatch:
     branches:
-      - develop
+      - legacy-jellyseerr
     paths:
       - 'docs/**'
       - 'gen-docs/**'
